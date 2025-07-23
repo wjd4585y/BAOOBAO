@@ -1,0 +1,416 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local SoundService = game:GetService("SoundService")
+local CoreGui = game:GetService("CoreGui")
+
+local player = Players.LocalPlayer
+
+local themes = {
+    Dark = {
+        background = Color3.fromRGB(18, 18, 18),
+        foreground = Color3.fromRGB(30, 30, 30),
+        accent = Color3.fromRGB(0, 144, 255),
+        text = Color3.fromRGB(255, 255, 255),
+        buttonIdle = Color3.fromRGB(40, 40, 40),
+        buttonHover = Color3.fromRGB(55, 55, 55)
+    },
+    Light = {
+        background = Color3.fromRGB(245, 245, 245),
+        foreground = Color3.fromRGB(255, 255, 255),
+        accent = Color3.fromRGB(0, 122, 255),
+        text = Color3.fromRGB(30, 30, 30),
+        buttonIdle = Color3.fromRGB(235, 235, 235),
+        buttonHover = Color3.fromRGB(225, 225, 225)
+    },
+    Neon = {
+        background = Color3.fromRGB(15, 15, 20),
+        foreground = Color3.fromRGB(20, 20, 25),
+        accent = Color3.fromRGB(0, 225, 255),
+        text = Color3.fromRGB(255, 255, 255),
+        buttonIdle = Color3.fromRGB(25, 25, 35),
+        buttonHover = Color3.fromRGB(35, 35, 45)
+    }
+}
+
+local currentTheme = "Dark"
+
+
+local clickSound = Instance.new("Sound")
+clickSound.SoundId = "rbxassetid://6042054027"
+clickSound.Volume = 0.5
+clickSound.Parent = SoundService
+
+local hoverSound = Instance.new("Sound")
+hoverSound.SoundId = "rbxassetid://6042054776"
+hoverSound.Volume = 0.2
+hoverSound.Parent = SoundService
+
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ThemeableToolGrabberGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = CoreGui
+
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 320, 0, 450)
+mainFrame.Position = UDim2.new(0.5, -160, 0.5, -225)
+mainFrame.BackgroundColor3 = themes[currentTheme].background
+mainFrame.BorderSizePixel = 0
+mainFrame.ClipsDescendants = true
+mainFrame.Parent = screenGui
+
+
+local cornerRadius = Instance.new("UICorner")
+cornerRadius.CornerRadius = UDim.new(0, 12)
+cornerRadius.Parent = mainFrame
+
+
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(1, 0, 0, 60)
+title.BackgroundColor3 = themes[currentTheme].foreground
+title.TextColor3 = themes[currentTheme].text
+title.Font = Enum.Font.GothamBold
+title.TextSize = 28
+title.Text = "By 09gw"
+title.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 12)
+titleCorner.Parent = title
+
+
+local toggleButton = Instance.new("TextButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.new(0.9, 0, 0, 50)
+toggleButton.Position = UDim2.new(0.05, 0, 0.2, 0)
+toggleButton.BackgroundColor3 = themes[currentTheme].accent
+toggleButton.TextColor3 = themes[currentTheme].text
+toggleButton.Font = Enum.Font.GothamSemibold
+toggleButton.TextSize = 22
+toggleButton.Text = "Enabled"
+toggleButton.AutoButtonColor = false
+toggleButton.Parent = mainFrame
+
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(0, 10)
+toggleCorner.Parent = toggleButton
+
+
+local delayInput = Instance.new("TextBox")
+delayInput.Name = "DelayInput"
+delayInput.Size = UDim2.new(0.9, 0, 0, 50)
+delayInput.Position = UDim2.new(0.05, 0, 0.35, 0)
+delayInput.BackgroundColor3 = themes[currentTheme].buttonIdle
+delayInput.TextColor3 = themes[currentTheme].text
+delayInput.Font = Enum.Font.Gotham
+delayInput.TextSize = 18
+delayInput.PlaceholderText = "Delay (seconds)"
+delayInput.Text = "0.01"
+delayInput.Parent = mainFrame
+
+local delayCorner = Instance.new("UICorner")
+delayCorner.CornerRadius = UDim.new(0, 10)
+delayCorner.Parent = delayInput
+
+
+local allToolsButton = Instance.new("TextButton")
+allToolsButton.Name = "AllToolsButton"
+allToolsButton.Size = UDim2.new(0.425, 0, 0, 50)
+allToolsButton.Position = UDim2.new(0.05, 0, 0.5, 0)
+allToolsButton.BackgroundColor3 = themes[currentTheme].buttonIdle
+allToolsButton.TextColor3 = themes[currentTheme].text
+allToolsButton.Font = Enum.Font.Gotham
+allToolsButton.TextSize = 18
+allToolsButton.Text = "All Tools"
+allToolsButton.AutoButtonColor = false
+allToolsButton.Parent = mainFrame
+
+local allToolsCorner = Instance.new("UICorner")
+allToolsCorner.CornerRadius = UDim.new(0, 10)
+allToolsCorner.Parent = allToolsButton
+
+local specificToolsButton = Instance.new("TextButton")
+specificToolsButton.Name = "SpecificToolsButton"
+specificToolsButton.Size = UDim2.new(0.425, 0, 0, 50)
+specificToolsButton.Position = UDim2.new(0.525, 0, 0.5, 0)
+specificToolsButton.BackgroundColor3 = themes[currentTheme].buttonIdle
+specificToolsButton.TextColor3 = themes[currentTheme].text
+specificToolsButton.Font = Enum.Font.Gotham
+specificToolsButton.TextSize = 18
+specificToolsButton.Text = "P1 & Bomb"
+specificToolsButton.AutoButtonColor = false
+specificToolsButton.Parent = mainFrame
+
+local specificToolsCorner = Instance.new("UICorner")
+specificToolsCorner.CornerRadius = UDim.new(0, 10)
+specificToolsCorner.Parent = specificToolsButton
+
+
+local customToolInput = Instance.new("TextBox")
+customToolInput.Name = "CustomToolInput"
+customToolInput.Size = UDim2.new(0.9, 0, 0, 50)
+customToolInput.Position = UDim2.new(0.05, 0, 0.65, 0)
+customToolInput.BackgroundColor3 = themes[currentTheme].buttonIdle
+customToolInput.TextColor3 = themes[currentTheme].text
+customToolInput.Font = Enum.Font.Gotham
+customToolInput.TextSize = 16
+customToolInput.PlaceholderText = "Custom tool names (comma-separated)"
+customToolInput.Text = ""
+customToolInput.Parent = mainFrame
+
+local customToolCorner = Instance.new("UICorner")
+customToolCorner.CornerRadius = UDim.new(0, 10)
+customToolCorner.Parent = customToolInput
+
+
+local themeSelector = Instance.new("TextButton")
+themeSelector.Name = "ThemeSelector"
+themeSelector.Size = UDim2.new(0.9, 0, 0, 50)
+themeSelector.Position = UDim2.new(0.05, 0, 0.8, 0)
+themeSelector.BackgroundColor3 = themes[currentTheme].buttonIdle
+themeSelector.TextColor3 = themes[currentTheme].text
+themeSelector.Font = Enum.Font.Gotham
+themeSelector.TextSize = 18
+themeSelector.Text = "Theme: " .. currentTheme
+themeSelector.AutoButtonColor = false
+themeSelector.Parent = mainFrame
+
+local themeSelectorCorner = Instance.new("UICorner")
+themeSelectorCorner.CornerRadius = UDim.new(0, 10)
+themeSelectorCorner.Parent = themeSelector
+
+
+local enabled = true
+local delay = 0.01
+local mode = "specific"
+local customTools = {}
+
+
+local function playClickSound()
+    clickSound:Play()
+end
+
+local function playHoverSound()
+    hoverSound:Play()
+end
+
+
+local function animateButton(button, isHover)
+    local theme = themes[currentTheme]
+    local targetColor
+    
+    if button == toggleButton then
+        if isHover then
+            targetColor = enabled and theme.accent:Lerp(Color3.fromRGB(255, 255, 255), 0.2) or 
+                         Color3.fromRGB(200, 50, 50):Lerp(Color3.fromRGB(255, 255, 255), 0.2)
+        else
+            targetColor = enabled and theme.accent or Color3.fromRGB(200, 50, 50)
+        end
+    else
+        if button == allToolsButton and mode == "all" or 
+           button == specificToolsButton and mode == "specific" then
+            targetColor = isHover and theme.accent:Lerp(Color3.fromRGB(255, 255, 255), 0.2) or theme.accent
+        else
+            targetColor = isHover and theme.buttonHover or theme.buttonIdle
+        end
+    end
+    
+    local tween = TweenService:Create(
+        button,
+        TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        {BackgroundColor3 = targetColor}
+    )
+    tween:Play()
+end
+
+local function handleButtonHover(button)
+    button.MouseEnter:Connect(function()
+        playHoverSound()
+        animateButton(button, true)
+    end)
+    
+    button.MouseLeave:Connect(function()
+        animateButton(button, false)
+    end)
+end
+
+local function updateToggleButton()
+    animateButton(toggleButton, false)
+    toggleButton.Text = enabled and "Enabled" or "Disabled"
+end
+
+local function updateModeButtons()
+    animateButton(allToolsButton, false)
+    animateButton(specificToolsButton, false)
+end
+
+local function equipTools()
+    if not player.Character then return end
+    local humanoid = player.Character:FindFirstChildWhichIsA("Humanoid")
+    if not humanoid then return end
+
+    for _, child in ipairs(workspace:GetChildren()) do
+        if child:IsA("BackpackItem") and child:FindFirstChild("Handle") then
+            if mode == "all" or 
+               (mode == "specific" and (child.Name == "P1" or child.Name == "Bomb")) or
+               (mode == "custom" and table.find(customTools, child.Name)) then
+                humanoid:EquipTool(child)
+            end
+        end
+    end
+end
+
+local function updateTheme()
+    mainFrame.BackgroundColor3 = themes[currentTheme].background
+    title.BackgroundColor3 = themes[currentTheme].foreground
+    title.TextColor3 = themes[currentTheme].text
+    delayInput.BackgroundColor3 = themes[currentTheme].buttonIdle
+    delayInput.TextColor3 = themes[currentTheme].text
+    customToolInput.BackgroundColor3 = themes[currentTheme].buttonIdle
+    customToolInput.TextColor3 = themes[currentTheme].text
+    themeSelector.BackgroundColor3 = themes[currentTheme].buttonIdle
+    themeSelector.TextColor3 = themes[currentTheme].text
+    themeSelector.Text = "Theme: " .. currentTheme
+    updateToggleButton()
+    updateModeButtons()
+end
+
+
+toggleButton.MouseButton1Click:Connect(function()
+    playClickSound()
+    enabled = not enabled
+    updateToggleButton()
+end)
+
+allToolsButton.MouseButton1Click:Connect(function()
+    playClickSound()
+    mode = "all"
+    updateModeButtons()
+end)
+
+specificToolsButton.MouseButton1Click:Connect(function()
+    playClickSound()
+    mode = "specific"
+    updateModeButtons()
+end)
+
+themeSelector.MouseButton1Click:Connect(function()
+    playClickSound()
+    local themeNames = {}
+    for themeName, _ in pairs(themes) do
+        table.insert(themeNames, themeName)
+    end
+    local currentIndex = table.find(themeNames, currentTheme)
+    currentTheme = themeNames[currentIndex % #themeNames + 1]
+    updateTheme()
+end)
+
+
+for _, button in ipairs({toggleButton, allToolsButton, specificToolsButton, themeSelector}) do
+    handleButtonHover(button)
+end
+
+
+spawn(function()
+    while true do
+        if enabled then
+            equipTools()
+        end
+        wait(delay)
+    end
+end)
+
+
+delayInput.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        local newDelay = tonumber(delayInput.Text)
+        if newDelay and newDelay > 0 then
+            delay = newDelay
+        else
+            delayInput.Text = tostring(delay)
+        end
+    end
+end)
+
+
+customToolInput.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        customTools = {}
+        for tool in string.gmatch(customToolInput.Text, "([^,]+)") do
+            table.insert(customTools, string.trim(tool))
+        end
+        if #customTools > 0 then
+            mode = "custom"
+            updateModeButtons()
+        end
+    end
+end)
+
+
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    local goal = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    local tween = TweenService:Create(mainFrame, TweenInfo.new(0.1), {Position = goal})
+    tween:Play()
+end
+
+mainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+mainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
+
+
+updateTheme()
+updateToggleButton()
+updateModeButtons()
+
+
+mainFrame.BackgroundTransparency = 1
+for _, child in ipairs(mainFrame:GetChildren()) do
+    if child:IsA("GuiObject") then
+        child.BackgroundTransparency = 1
+        child.TextTransparency = 1
+    end
+end
+
+wait(0.1)
+
+local fadeInTween = TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0})
+fadeInTween:Play()
+
+for _, child in ipairs(mainFrame:GetChildren()) do
+    if child:IsA("GuiObject") then
+        local childTween = TweenService:Create(child, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0, TextTransparency = 0})
+        childTween:Play()
+    end
+end
